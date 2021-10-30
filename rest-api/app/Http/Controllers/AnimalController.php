@@ -50,3 +50,4 @@ class AnimalController extends Controller
         echo json_encode($this->animal);
     }
 }
+//pertemuan-5
