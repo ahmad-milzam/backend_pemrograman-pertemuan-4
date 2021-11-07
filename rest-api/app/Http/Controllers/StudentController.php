@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 # digunakan untuk berinteraksi dengan database
 use App\Models\Student;
 use Illuminate\Http\Request;
+// use PhpParser\Node\Expr\FuncCall;
+// use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 class StudentController extends Controller
 {
@@ -21,6 +23,27 @@ class StudentController extends Controller
 
         # mengirim data (json) dan kode 200
         return response()->json($data, 200);
+    }
+
+    public function show ($id)
+    {
+        # menggunakan model Student untuk select data by id
+        $student = Student::find($id);
+
+        if ($student){
+            // echo 'data ada';
+            $data = [
+                'message' => 'Get all students by id',
+                'data' => $student
+            ];
+            return response()->json($data, 200);
+        } else {
+            // echo 'data tidak ada';
+            $data = [
+                'message' => 'Student not found'
+            ];
+            return response()->json($data, 404);
+        }
     }
 
     # membuat method store
@@ -44,5 +67,63 @@ class StudentController extends Controller
 
         // mengembalikan data (json) dan kode 201
         return response()->json($data, 201);
+    }
+
+    # membuat method update
+    public function update(Request $request, $id)
+    {
+        # cari id student yang ingin diupdate
+        $student = Student::find($id);
+
+        if ($student) {
+            # menangkap data request
+            $input = [
+                'nama' => $request->nama ?? $student->nama,
+                'nim' => $request->nim ?? $student->nim,
+                'email' => $request->email ?? $student->email,
+                'jurusan' => $request->jurusan ?? $student->jurusan
+            ];
+
+            # melakukan update data
+            $student->update($input);
+
+            $data = [
+                'message' => 'Student is updated',
+                'data' => $student
+            ];
+
+            # mengembalikan data (json) dan kode 200
+            return response()->json($data, 200);
+        } else {
+            $data = [
+                'message' => 'Student not found'
+            ];
+
+            return response()->json($data, 404);
+        }
+    }
+
+    public function destroy($id)
+    {
+        # cari id student yang ingin dihapus
+        $student = Student::find($id);
+
+        if ($student) {
+            # hapus student tersebut
+            $student->delete();
+
+            $data = [
+                'message' => 'Student is deleted'
+            ];
+
+            # mengembalikan data (json) dan kode 200
+            return response()->json($data, 200);
+        } else {
+            $data = [
+                'message' => 'Student not found'
+            ];
+
+            return response()->json($data, 404);
+        }
     }
 }
